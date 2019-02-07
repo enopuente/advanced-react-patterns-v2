@@ -13,25 +13,25 @@ import {Switch} from '../switch'
 // want. Here's a simple example of that API:
 //
 // const defaultValue = 'light'
-// const ThemeContext = React.createContext(defaultValue)
+// const ToggleContext = React.createContext(defaultValue)
 //   Note: The `defaultValue` can be an object, function, or anything.
-//   It's simply what React will use if the ThemeContext.Consumer is rendered
-//   outside a ThemeContext.Provider
+//   It's simply what React will use if the ToggleContext.Consumer is rendered
+//   outside a ToggleContext.Provider
 //   In our situation, it wouldn't make sense to render a Consumer outside a`
 //   Provider, so you don't have to specify a defaultValue. One of the extra
 //   credit items shows how to throw a helpful error message if someone attempts
 //   to render a Consumer without a Provider.
 //
 // ...
-// <ThemeContext.Provider value={this.state}>
+// <ToggleContext.Provider value={this.state}>
 //   {this.props.children}
-// </ThemeContext.Provider>
+// </ToggleContext.Provider>
 // ...
 //
 // ...
-// <ThemeContext.Consumer>
+// <ToggleContext.Consumer>
 //   {contextValue => <div>The current theme is: {contextValue}</div>}
-// </ThemeContext.Consumer>
+// </ToggleContext.Consumer>
 // ...
 //
 // NOTE: Spacing matters!! For example, these are not the same:
@@ -45,7 +45,7 @@ import {Switch} from '../switch'
 //   (newlines are ok, like in the above example)
 
 // 🐨 create a ToggleContext with React.createContext here
-const ThemeContext = React.createContext()
+const ToggleContext = React.createContext()
 class Toggle extends React.Component {
 
 
@@ -53,28 +53,24 @@ class Toggle extends React.Component {
   // 🐨 each of these compound components will need to be changed to use
   // ToggleContext.Consumer and rather than getting `on` and `toggle`
   // from props, it'll get it from the ToggleContext.Consumer value.
-  static On = ({children}) => {
-    return (
-      <ThemeContext.Consumer>
-        {({on}) => on ? null : children }
-      </ThemeContext.Consumer>
-    )
-  }
+  static On = ({children}) => (
+    <ToggleContext.Consumer>
+      {({on}) => on ? null : children }
+    </ToggleContext.Consumer>
+  )
 
-  static Off = ({children}) => {
-    return (
-      <ThemeContext.Consumer>
-        {({on}) => on ? children : null}
-      </ThemeContext.Consumer>
-    )
-  }
+  static Off = ({children}) => (
+    <ToggleContext.Consumer>
+      {({on}) => on ? children : null}
+    </ToggleContext.Consumer>
+  )
 
   static Button = (props) => (
-    <ThemeContext.Consumer>
+    <ToggleContext.Consumer>
       { ({on, toggle}) => (
         <Switch on={on} onClick={toggle} {...props} />
       )}
-    </ThemeContext.Consumer>
+    </ToggleContext.Consumer>
   )
   state = {on: false}
   toggle = () =>
@@ -91,12 +87,12 @@ class Toggle extends React.Component {
     // value (the value prop).
 
     return (
-      <ThemeContext.Provider value={{
+      <ToggleContext.Provider value={{
         on: this.state.on,
         toggle: this.toggle
       }}>
         {this.props.children}
-      </ThemeContext.Provider>
+      </ToggleContext.Provider>
     )
   }
 }
