@@ -27,23 +27,38 @@ class Toggle extends React.Component {
   static defaultProps = {
     initialOn: false,
     onReset: () => {},
+    stateReducer: (state, changes) => changes
     // 🐨 let's add a default stateReducer here. It should return
     // the changes object as it is passed.
-    stateReducer: (state, changes) => changes,
   }
   initialState = {on: this.props.initialOn}
-  state = this.initialState // // 🐨 Then, if the returned value exists and has properties, return that from your updater function. // If it does not exist or is an empty object, then return null (avoids an unecessary re-render). // // 🐨 Pass the callback to the 2nd argument to this.setState // 🐨 let's add a method here called `internalSetState`. It will simulate // the same API as `setState(updater, callback)`: // - updater: (changes object or function that returns the changes object) // - callback: Function called after the state has been updated // This will call setState with an updater function (a function that receives the state). // If the changes are a function, then call that function with the state to get the actual changes // // 🐨 Call this.props.stateReducer with the `state` and `changes` to get the user changes.
+  
+  state = this.initialState
+
   internalSetState = (changes, callback) => {
-    this.setState(state => {
-      const changesObject =
-        typeof changes === 'function' ? changes(state) : changes
-      const userChanges = this.props.stateReducer(
-        state,
-        changesObject,
-      )
+    this.setState(currentState => {
+      const changesObject = typeof changes === 'function' ? changes(currentState) : changes
+      const userChanges = this.props.stateReducer(currentState, changesObject)
       return Object.keys(userChanges).length ? userChanges : null
-    }, callback)
+    },
+    callback)
   }
+  // 🐨 let's add a method here called `internalSetState`. It will simulate
+  // the same API as `setState(updater, callback)`:
+  // - updater: (changes object or function that returns the changes object)
+  // - callback: Function called after the state has been updated
+  // This will call setState with an updater function (a function that receives the state).
+  // If the changes are a function, then call that function with the state to get the actual changes
+  //
+  // 🐨 Call this.props.stateReducer with the `state` and `changes` to get the user changes.
+  //
+  // 🐨 Then, if the returned value exists and has properties, return that from your updater function.
+  // If it does not exist or is an empty object, then return null (avoids an unecessary re-render).
+  //
+  // 🐨 Pass the callback to the 2nd argument to this.setState
+  //
+  // 🐨 Finally, update all pre-existing instances of this.setState
+  // to this.internalSetState
   reset = () =>
     this.internalSetState(this.initialState, () =>
       this.props.onReset(this.state.on),
@@ -70,7 +85,8 @@ class Toggle extends React.Component {
     return this.props.children(this.getStateAndHelpers())
   }
 }
-// component is intended to be used and is used in the tests. // You can make all the tests pass by updating the Toggle component.
+
+
 // Don't make changes to the Usage component. It's here to show you how your
 class Usage extends React.Component {
   static defaultProps = {
@@ -81,7 +97,7 @@ class Usage extends React.Component {
   state = this.initialState
   handleToggle = (...args) => {
     this.setState(({timesClicked}) => ({
-      timesClicked: timesClicked + 1,
+      timesClicked: timesClicked + 1
     }))
     this.props.onToggle(...args)
   }
