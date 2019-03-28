@@ -3,9 +3,20 @@ import React, {Fragment} from 'react'
 import {Switch} from '../switch'
 
 // 🐨 create your React context here with React.createContext
+const ToggleContext = React.createContext()
+
+const customConsumer = (props) => {
+  return (
+    <ToggleContext.Consumer {...props} >
+      {value => !value ? new Error('ERRRORRRR') : props.children(value) }
+    </ToggleContext.Consumer>
+  )
+}
 
 class Toggle extends React.Component {
   // 🐨 expose the ToggleContext.Consumer as a static property of Toggle here.
+  static Consumer = customConsumer
+
   state = {on: false}
   toggle = () =>
     this.setState(
@@ -14,15 +25,20 @@ class Toggle extends React.Component {
     )
   render() {
     // 🐨 replace this with rendering the ToggleContext.Provider
-    return this.props.children({
-      on: this.state.on,
-      toggle: this.toggle,
-    })
+    return (
+      <ToggleContext.Provider value={{
+        on: this.state.on,
+        toggle: this.toggle
+      }}>
+        {this.props.children}
+      </ToggleContext.Provider>
+    )
   }
 }
 
 // 💯 Extra credit: Add a custom Consumer that validates the
 // ToggleContext.Consumer is rendered within a provider
+
 //
 // 💯 Extra credit: avoid unecessary re-renders by only updating the value when
 // state changes
